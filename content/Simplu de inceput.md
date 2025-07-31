@@ -1,6 +1,0 @@
-ejdghfdjfh
-
-|     |     |
-| --- | --- |
-|     |     |
-- [ ] eijfeifj
