@@ -2,38 +2,40 @@ name: Deploy Quartz site to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: "20"
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+          run_install: true
 
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Build site
+      - name: Build Quartz site
         run: pnpm quartz build
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v1
         with:
           path: ./public
 
@@ -43,7 +45,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
