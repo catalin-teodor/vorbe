@@ -1,14 +1,9 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 
-/**
- * Quartz 4 Configuration
- *
- * See https://quartz.jzhao.xyz/configuration for more information.
- */
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "Quartz 4",
+    pageTitle: "Vorbe",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
@@ -16,16 +11,33 @@ const config: QuartzConfig = {
       provider: "plausible",
     },
     locale: "en-US",
-    baseUrl: "quartz.jzhao.xyz",
+    baseUrl: "quartz.jzhao.xyz", // Schimbă cu domeniul tău dacă vrei
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
+
+    // 🌟 SIDEBAR PERSONALIZAT
+    sidebar: {
+      collapsed: false,
+      content: [
+        "index",
+        {
+          section: "Cele mai recente articole",
+          contents: ["Jurnal"],
+        },
+        {
+          section: "Cele mai recente ..alte",
+          contents: ["X"],
+        },
+      ],
+    },
+
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
       typography: {
-        header: "Schibsted Grotesk",
-        body: "Source Sans Pro",
-        code: "IBM Plex Mono",
+        header: "Raleway",
+        body: "Raleway",
+        code: "Raleway",
       },
       colors: {
         lightMode: {
@@ -53,6 +65,7 @@ const config: QuartzConfig = {
       },
     },
   },
+
   plugins: {
     transformers: [
       Plugin.FrontMatter(),
@@ -88,8 +101,7 @@ const config: QuartzConfig = {
       Plugin.Static(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),
-      // Comment out CustomOgImages to speed up build time
-      Plugin.CustomOgImages(),
+      Plugin.CustomOgImages(), // Dezactivează dacă vrei build mai rapid
     ],
   },
 }
