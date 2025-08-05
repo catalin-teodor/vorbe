@@ -1,0 +1,10 @@
+# Ignoră tot ce nu e în content/
+*
+!.gitignore
+!content/
+!content/**
+!quartz.config.ts
+!package.json
+!pnpm-lock.yaml
+!tsconfig.json
+
