@@ -53,7 +53,17 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     ...userOpts,
   }
 
-  const { head: Head, header, beforeBody, pageBody, afterBody, left, right, footer: Footer } = opts
+  const {
+    head: Head,
+    header = [],
+    beforeBody = [],
+    pageBody,
+    afterBody = [],
+    left = [],
+    right = [],
+    footer: Footer,
+  } = opts
+
   const Header = HeaderConstructor()
   const Body = BodyConstructor()
 
@@ -83,7 +93,6 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
           containsIndex = true
         }
 
-        // only process home page, non-tag pages, and non-index pages
         if (slug.endsWith("/index") || slug.startsWith("tags/")) continue
         yield processContent(ctx, tree, file.data, allFiles, opts, resources)
       }
@@ -100,7 +109,6 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
     async *partialEmit(ctx, content, resources, changeEvents) {
       const allFiles = content.map((c) => c[1].data)
 
-      // find all slugs that changed or were added
       const changedSlugs = new Set<string>()
       for (const changeEvent of changeEvents) {
         if (!changeEvent.file) continue
