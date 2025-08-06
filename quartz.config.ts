@@ -1,7 +1,6 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 import { ComponentResources } from "./quartz/plugins/emitters/componentResources"
-import { TagPlugin } from "./quartz/plugins/filters/tag"
 
 const config: QuartzConfig = {
   configuration: {
@@ -70,7 +69,6 @@ const config: QuartzConfig = {
     ],
     filters: [
       Plugin.RemoveDrafts(),
-      TagPlugin(), // ✅ suport tag-uri
     ],
     emitters: [
       Plugin.AliasRedirects(),
