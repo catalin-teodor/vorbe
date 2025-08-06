@@ -1,12 +1,8 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
 import { ComponentResources } from "./quartz/plugins/emitters/componentResources"
+import { TagPlugin } from "./quartz/plugins/filters/tag"
 
-/**
- * Quartz 4.0 Configuration
- *
- * See https://quartz.jzhao.xyz/configuration for more information.
- */
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "VoRbE",
@@ -16,7 +12,7 @@ const config: QuartzConfig = {
       provider: "plausible",
     },
     locale: "ro-RO",
-    baseUrl: "catalin-teodor.github.io/vorbe",
+    baseUrl: "https://catalin-teodor.github.io/vorbe",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "created",
     theme: {
@@ -51,6 +47,7 @@ const config: QuartzConfig = {
       },
     },
   },
+
   plugins: {
     transformers: [
       Plugin.FrontMatter(),
@@ -71,12 +68,15 @@ const config: QuartzConfig = {
       Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
       Plugin.Description(),
     ],
-    filters: [Plugin.RemoveDrafts()],
+    filters: [
+      Plugin.RemoveDrafts(),
+      TagPlugin(), // ✅ suport tag-uri
+    ],
     emitters: [
       Plugin.AliasRedirects(),
       ComponentResources({
-  afterBody: [],
-}),
+        afterBody: [],
+      }),
       Plugin.ContentPage(),
       Plugin.FolderPage(),
       Plugin.TagPage(),
