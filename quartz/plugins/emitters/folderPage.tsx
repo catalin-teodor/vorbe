@@ -7,7 +7,7 @@ import BodyConstructor from "../../components/Body"
 import { defaultProcessedContent } from "../vfile"
 import { FullSlug } from "../../util/path"
 import { sharedPageComponents } from "../../../quartz.layout"
-import { Folder } from "../../components"
+//import { Folder } from "../../components"
 
 export const FolderPage: QuartzEmitterPlugin = () => {
   const Body = BodyConstructor()
