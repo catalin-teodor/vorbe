@@ -1,5 +1,5 @@
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
-import { classNames } from "../util"
+import { classNames } from "../util/classNames"
 
 const CustomNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
   const navItems = [
