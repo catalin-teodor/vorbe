@@ -1,12 +1,12 @@
-import { FolderContentMap, QuartzPluginData } from "../vfile"
 import { QuartzEmitterPlugin } from "../types"
 import { FullSlug, pathToRoot } from "../../util/path"
 import { FolderList } from "../../components"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { write } from "./helpers"
-import { BuildCtx } from "../../util/ctx"
+import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
+import { defaultProcessedContent } from "../vfile"
 import { QuartzComponentProps } from "../../components/types"
+import { BuildCtx } from "../../util/ctx"
 
 export const FolderPage: QuartzEmitterPlugin = () => {
   const opts = {
@@ -28,29 +28,34 @@ export const FolderPage: QuartzEmitterPlugin = () => {
       return [Head, Body, pageBody, Footer]
     },
     async *emit(ctx, _content, resources) {
-      const folderData = ctx.folderContent
       const cfg = ctx.cfg.configuration
+      const folderData = ctx.folderContent
 
       for (const [folder, files] of Object.entries(folderData)) {
         const slug = (folder.endsWith("/") ? folder : folder + "/") as FullSlug
 
+        const [_, file] = defaultProcessedContent({
+          slug,
+          text: `Folder: ${folder}`,
+          description: `Posts and notes inside ${folder}`,
+          frontmatter: { title: folder, tags: [] },
+        })
+
+        const externalResources = pageResources(pathToRoot(slug), resources)
+
         const componentData: QuartzComponentProps = {
           ctx,
-          fileData: {
-            slug,
-            frontmatter: { title: folder },
-            tags: [],
-          } as QuartzPluginData,
-          externalResources: pageResources(pathToRoot(slug), resources),
           cfg,
-          children: [],
+          fileData: file.data,
+          externalResources,
           tree: files,
           allFiles: [],
+          children: [],
         }
 
         yield write({
           ctx,
-          content: renderPage(cfg, slug, componentData, opts, componentData.externalResources),
+          content: renderPage(cfg, slug, componentData, opts, externalResources),
           slug,
           ext: ".html",
         })
