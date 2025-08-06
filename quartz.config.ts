@@ -1,5 +1,6 @@
 import { QuartzConfig } from "./quartz/cfg"
 import * as Plugin from "./quartz/plugins"
+import { ComponentResources } from "./quartz/plugins/emitters/componentResources"
 
 /**
  * Quartz 4.0 Configuration
@@ -73,7 +74,7 @@ const config: QuartzConfig = {
     filters: [Plugin.RemoveDrafts()],
     emitters: [
       Plugin.AliasRedirects(),
-      Plugin.componentResources({
+      ComponentResources({
   afterBody: [],
 }),
       Plugin.ContentPage(),
