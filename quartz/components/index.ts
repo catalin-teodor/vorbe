@@ -50,6 +50,6 @@ export {
   Comments,
   Flex,
   ConditionalRender,
-},
+}
 
 export { default as CustomNav } from "./CustomNav"
