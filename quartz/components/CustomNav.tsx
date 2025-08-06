@@ -7,7 +7,7 @@ const CustomNav: QuartzComponent = ({ displayClass }: QuartzComponentProps) => {
     { text: "📝 Articole", link: "/articole" },
     { text: "💭 Gânduri", link: "/ganduri" },
     { text: "📖 Blog", link: "/blog" },
-    { text: "🚀 Proiecte", link: "/proiecte" },
+    { text: "🚀 Proiectele", link: "/proiecte" },
     { text: "👤 Despre", link: "/despre" },
   ]
 
