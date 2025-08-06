@@ -1,6 +1,6 @@
 import { QuartzEmitterPlugin } from "../types"
 import { FullSlug, pathToRoot } from "../../util/path"
-import { FolderList } from "../../components"
+//import { FolderList } from "../../components"
 import { pageResources, renderPage } from "../../components/renderPage"
 import { write } from "./helpers"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
@@ -12,7 +12,7 @@ export const FolderPage: QuartzEmitterPlugin = () => {
   const opts = {
     ...sharedPageComponents,
     ...defaultContentPageLayout,
-    pageBody: FolderList(),
+    //pageBody: FolderList(),
     beforeBody: [],
     left: [],
     right: [],
