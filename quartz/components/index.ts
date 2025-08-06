@@ -15,6 +15,7 @@ import Date from "./Date"
 import DesktopOnly from "./DesktopOnly"
 import Explorer from "./Explorer"
 import Flex from "./Flex"
+import Folder from "./Folder"
 import Footer from "./Footer"
 import Graph from "./Graph"
 import Head from "./Head"
@@ -44,9 +45,10 @@ export {
   Date,
   DesktopOnly,
   Explorer,
+  Flex,
+  Folder,
   FolderContent,
   Footer,
-  Flex,
   Graph,
   Head,
   Header,
