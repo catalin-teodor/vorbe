@@ -45,6 +45,27 @@ const config: QuartzConfig = {
         },
       },
     },
+    // ✅ meniu custom
+    pageLayout: {
+      customNav: [
+        {
+          title: "Despre",
+          href: "/despre",
+        },
+        {
+          title: "Articole",
+          href: "/articole",
+        },
+        {
+          title: "Eseuri",
+          href: "/eseuri",
+        },
+        {
+          title: "Taguri",
+          href: "/tags",
+        },
+      ],
+    },
   },
 
   plugins: {
@@ -67,15 +88,17 @@ const config: QuartzConfig = {
       Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
       Plugin.Description(),
     ],
+
     filters: [
       Plugin.RemoveDrafts(),
     ],
+
     emitters: [
       Plugin.AliasRedirects(),
       ComponentResources(),
       Plugin.ContentPage(),
-      Plugin.FolderPage(),
-      Plugin.TagPage(),
+      Plugin.FolderPage(), // ✅ afișează foldere în structură
+      Plugin.TagPage(),    // ✅ suport taguri
       Plugin.ContentIndex({
         enableSiteMap: true,
         enableRSS: true,
