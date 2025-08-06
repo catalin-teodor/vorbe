@@ -25,6 +25,13 @@ type ComponentResources = {
   afterDOMLoaded: string[]
 }
 
+function normalize(resource: unknown): string[] {
+  if (!resource) return []
+  if (Array.isArray(resource)) return resource.filter((r) => typeof r === "string")
+  if (typeof resource === "string") return [resource]
+  return []
+}
+
 function getComponentResources(ctx: BuildCtx): ComponentResources {
   try {
     const allComponents: Set<QuartzComponent> = new Set()
@@ -41,15 +48,14 @@ function getComponentResources(ctx: BuildCtx): ComponentResources {
       afterDOMLoaded: new Set<string>(),
     }
 
-    function normalize(resource: string | string[] | undefined): string[] {
-      if (!resource) return []
-      return Array.isArray(resource) ? resource : [resource]
-    }
-
     for (const component of allComponents) {
       normalize(component.css).forEach((c) => componentResources.css.add(c))
-      normalize(component.beforeDOMLoaded).forEach((b) => componentResources.beforeDOMLoaded.add(b))
-      normalize(component.afterDOMLoaded).forEach((a) => componentResources.afterDOMLoaded.add(a))
+      normalize(component.beforeDOMLoaded).forEach((b) =>
+        componentResources.beforeDOMLoaded.add(b),
+      )
+      normalize(component.afterDOMLoaded).forEach((a) =>
+        componentResources.afterDOMLoaded.add(a),
+      )
     }
 
     return {
