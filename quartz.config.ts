@@ -1,5 +1,16 @@
 import { QuartzConfig } from "./quartz/cfg"
-import * as Plugin from "./quartz/plugins"
+
+import { GitHubFlavoredMarkdown } from "./quartz/plugins/transformers/gfm"
+import { SyntaxHighlighting } from "./quartz/plugins/transformers/syntax"
+import { TableOfContents } from "./quartz/plugins/transformers/toc"
+import { EmojiTransform } from "./quartz/plugins/transformers/emoji"
+import { LastUpdatedTransform } from "./quartz/plugins/transformers/lastUpdated"
+import { DateTransform } from "./quartz/plugins/transformers/date"
+
+import { TagPlugin } from "./quartz/plugins/features/tag"
+import { SearchPlugin } from "./quartz/plugins/features/search"
+import { CategorizePlugin } from "./quartz/plugins/features/categorize"
+import { GlobalDataPlugin } from "./quartz/plugins/features/globalData"
 
 const config: QuartzConfig = {
   configuration: {
@@ -7,9 +18,6 @@ const config: QuartzConfig = {
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
-    analytics: {
-      provider: "plausible", // opțional
-    },
     locale: "ro-RO",
     baseUrl: "https://catalin-teodor.github.io/vorbe",
     ignorePatterns: ["private", "templates", ".obsidian"],
@@ -22,24 +30,16 @@ const config: QuartzConfig = {
   },
 
   plugins: [
-    Plugin.frontmatter(),
-    Plugin.syntaxHighlighting(),
-    Plugin.gitHubFlavoredMarkdown(),
-    Plugin.externalLinks(),
-    Plugin.categorize({
-      strategy: "folder", // folosește structura de foldere ca categorii
-    }),
-    Plugin.search(),
-    Plugin.tableOfContents(),
-    Plugin.tag(),
-    Plugin.date({
-      dateType: "modified",
-    }),
-    Plugin.emoji(),
-    Plugin.lastUpdated(),
-
-    // elimină pluginul Explorer pentru a nu mai apărea în sidebar
-    Plugin.globalData({
+    GitHubFlavoredMarkdown(),
+    SyntaxHighlighting(),
+    TableOfContents(),
+    EmojiTransform(),
+    LastUpdatedTransform(),
+    DateTransform({ dateType: "modified" }),
+    TagPlugin(),
+    SearchPlugin(),
+    CategorizePlugin({ strategy: "folder" }),
+    GlobalDataPlugin({
       siteTitle: "VoRbE",
       pageLinks: [
         { text: "Articole", link: "/articole" },
