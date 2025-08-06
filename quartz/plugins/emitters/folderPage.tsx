@@ -1,65 +1,63 @@
 import { QuartzEmitterPlugin } from "../types"
-import { FullSlug, pathToRoot } from "../../util/path"
-//import { FolderList } from "../../components"
-import { pageResources, renderPage } from "../../components/renderPage"
 import { write } from "./helpers"
-import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
-import { defaultProcessedContent } from "../vfile"
-import { QuartzComponentProps } from "../../components/types"
 import { BuildCtx } from "../../util/ctx"
+import { QuartzComponentProps } from "../../components/types"
+import { renderPage, pageResources } from "../../components/renderPage"
+import BodyConstructor from "../../components/Body"
+import { defaultProcessedContent } from "../vfile"
+import { FullSlug } from "../../util/path"
+import { sharedPageComponents } from "../../../quartz.layout"
+import { Folder } from "../../components"
 
 export const FolderPage: QuartzEmitterPlugin = () => {
+  const Body = BodyConstructor()
+
   const opts = {
     ...sharedPageComponents,
-    ...defaultContentPageLayout,
-    //pageBody: FolderList(),
+    pageBody: Folder(),
     beforeBody: [],
     left: [],
     right: [],
-    afterBody: [],
   }
 
   const { head: Head, pageBody, footer: Footer } = opts
-  const Body = opts.pageBody
 
   return {
     name: "FolderPage",
     getQuartzComponents() {
       return [Head, Body, pageBody, Footer]
     },
-    async *emit(ctx, _content, resources) {
+    async *emit(ctx: BuildCtx, _content, resources) {
       const cfg = ctx.cfg.configuration
-      const folderData = ctx.folderContent
 
-      for (const [folder, files] of Object.entries(folderData)) {
-        const slug = (folder.endsWith("/") ? folder : folder + "/") as FullSlug
+      // fallback slug if nothing provided
+      const slug = "folder" as FullSlug
 
-        const [_, file] = defaultProcessedContent({
-          slug,
-          text: `Folder: ${folder}`,
-          description: `Posts and notes inside ${folder}`,
-          frontmatter: { title: folder, tags: [] },
-        })
+      const [tree, fileData] = defaultProcessedContent({
+        slug,
+        text: "Folder Listing",
+        description: "This is a folder page.",
+        frontmatter: { title: "Folder Listing", tags: [] },
+      })
 
-        const externalResources = pageResources(pathToRoot(slug), resources)
+      const externalResources = pageResources("/", resources)
 
-        const componentData: QuartzComponentProps = {
-          ctx,
-          cfg,
-          fileData: file.data,
-          externalResources,
-          tree: files,
-          allFiles: [],
-          children: [],
-        }
-
-        yield write({
-          ctx,
-          content: renderPage(cfg, slug, componentData, opts, externalResources),
-          slug,
-          ext: ".html",
-        })
+      const componentData: QuartzComponentProps = {
+        ctx,
+        fileData: fileData.data,
+        externalResources,
+        cfg,
+        children: [],
+        tree,
+        allFiles: [],
       }
+
+      yield write({
+        ctx,
+        content: renderPage(cfg, slug, componentData, opts, externalResources),
+        slug,
+        ext: ".html",
+      })
     },
     async *partialEmit() {},
   }
