@@ -3,107 +3,53 @@ import * as Plugin from "./quartz/plugins"
 
 const config: QuartzConfig = {
   configuration: {
-    pageTitle: "Vorbe",
+    pageTitle: "VoRbE",
     pageTitleSuffix: "",
     enableSPA: true,
     enablePopovers: true,
     analytics: {
-      provider: "plausible",
+      provider: "plausible", // opțional
     },
-    locale: "en-US",
-    baseUrl: "quartz.jzhao.xyz", // Schimbă cu domeniul tău dacă vrei
+    locale: "ro-RO",
+    baseUrl: "https://catalin-teodor.github.io/vorbe",
     ignorePatterns: ["private", "templates", ".obsidian"],
     defaultDateType: "modified",
-
-    // 🌟 SIDEBAR PERSONALIZAT
-    sidebar: {
-      collapsed: false,
-      content: [
-        "index",
-        {
-          section: "Cele mai recente articole",
-          contents: ["Jurnal"],
-        },
-        {
-          section: "Cele mai recente ..alte",
-          contents: ["X"],
-        },
-      ],
-    },
-
     theme: {
-      fontOrigin: "googleFonts",
-      cdnCaching: true,
-      typography: {
-        header: "Raleway",
-        body: "Raleway",
-        code: "Raleway",
-      },
-      colors: {
-        lightMode: {
-          light: "#faf8f8",
-          lightgray: "#e5e5e5",
-          gray: "#b8b8b8",
-          darkgray: "#4e4e4e",
-          dark: "#2b2b2b",
-          secondary: "#284b63",
-          tertiary: "#84a59d",
-          highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "#fff23688",
-        },
-        darkMode: {
-          light: "#161618",
-          lightgray: "#393639",
-          gray: "#646464",
-          darkgray: "#d4d4d4",
-          dark: "#ebebec",
-          secondary: "#7b97aa",
-          tertiary: "#84a59d",
-          highlight: "rgba(143, 159, 169, 0.15)",
-          textHighlight: "#b3aa0288",
-        },
-      },
+      typography: "raleway",
+      colors: "light",
+      fontSize: "medium",
     },
   },
 
-  plugins: {
-    transformers: [
-      Plugin.FrontMatter(),
-      Plugin.CreatedModifiedDate({
-        priority: ["frontmatter", "git", "filesystem"],
-      }),
-      Plugin.SyntaxHighlighting({
-        theme: {
-          light: "github-light",
-          dark: "github-dark",
-        },
-        keepBackground: false,
-      }),
-      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
-      Plugin.GitHubFlavoredMarkdown(),
-      Plugin.TableOfContents(),
-      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
-      Plugin.Description(),
-      Plugin.Latex({ renderEngine: "katex" }),
-    ],
-    filters: [Plugin.RemoveDrafts()],
-    emitters: [
-      Plugin.AliasRedirects(),
-      Plugin.ComponentResources(),
-      Plugin.ContentPage(),
-      Plugin.FolderPage(),
-      Plugin.TagPage(),
-      Plugin.ContentIndex({
-        enableSiteMap: true,
-        enableRSS: true,
-      }),
-      Plugin.Assets(),
-      Plugin.Static(),
-      Plugin.Favicon(),
-      Plugin.NotFoundPage(),
-      Plugin.CustomOgImages(), // Dezactivează dacă vrei build mai rapid
-    ],
-  },
+  plugins: [
+    Plugin.frontmatter(),
+    Plugin.syntaxHighlighting(),
+    Plugin.gitHubFlavoredMarkdown(),
+    Plugin.externalLinks(),
+    Plugin.categorize({
+      strategy: "folder", // folosește structura de foldere ca categorii
+    }),
+    Plugin.search(),
+    Plugin.tableOfContents(),
+    Plugin.tag(),
+    Plugin.date({
+      dateType: "modified",
+    }),
+    Plugin.emoji(),
+    Plugin.lastUpdated(),
+
+    // elimină pluginul Explorer pentru a nu mai apărea în sidebar
+    Plugin.globalData({
+      siteTitle: "VoRbE",
+      pageLinks: [
+        { text: "Articole", link: "/articole" },
+        { text: "Gânduri", link: "/ganduri" },
+        { text: "Blog", link: "/blog" },
+        { text: "Proiecte", link: "/proiecte" },
+        { text: "Despre", link: "/despre" },
+      ],
+    }),
+  ],
 }
 
 export default config
