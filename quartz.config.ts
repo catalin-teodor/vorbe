@@ -1,41 +1,91 @@
 import { QuartzConfig } from "./quartz/cfg"
+import * as Plugin from "./quartz/plugins"
 
-import { ContentGraphPlugin } from "./quartz/plugins/content-graph"
-import { FileExplorerPlugin } from "./quartz/plugins/explorer"
-import { GlobalDataPlugin } from "./quartz/plugins/global-data"
-import { TableOfContentsPlugin } from "./quartz/plugins/table-of-contents"
-import { GitHubFlavoredMarkdown } from "./quartz/plugins/gfm"
-import { SearchPlugin } from "./quartz/plugins/search"
-
+/**
+ * Quartz 4.0 Configuration
+ *
+ * See https://quartz.jzhao.xyz/configuration for more information.
+ */
 const config: QuartzConfig = {
   configuration: {
     pageTitle: "VoRbE",
     enableSPA: true,
-    baseUrl: "https://catalin-teodor.github.io/vorbe",
-    theme: {
-      typography: "serif",
-      colors: "light",
+    enablePopovers: true,
+    analytics: {
+      provider: "plausible",
     },
-    ignorePatterns: [".obsidian", "templates", "private"],
+    locale: "ro-RO",
+    baseUrl: "catalin-teodor.github.io/vorbe",
+    ignorePatterns: ["private", "templates", ".obsidian"],
+    defaultDateType: "created",
+    theme: {
+      fontOrigin: "googleFonts",
+      cdnCaching: true,
+      typography: {
+        header: "Raleway",
+        body: "Raleway",
+        code: "IBM Plex Mono",
+      },
+      colors: {
+        lightMode: {
+          light: "#faf8f8",
+          lightgray: "#e5e5e5",
+          gray: "#b8b8b8",
+          darkgray: "#4e4e4e",
+          dark: "#2b2b2b",
+          secondary: "#284b63",
+          tertiary: "#84a59d",
+          highlight: "rgba(143, 159, 169, 0.15)",
+        },
+        darkMode: {
+          light: "#161618",
+          lightgray: "#393639",
+          gray: "#646464",
+          darkgray: "#d4d4d4",
+          dark: "#ebebec",
+          secondary: "#7c3aed",
+          tertiary: "#84cc16",
+          highlight: "rgba(143, 159, 169, 0.15)",
+        },
+      },
+    },
   },
-  plugins: [
-    GitHubFlavoredMarkdown(),
-    TableOfContentsPlugin(),
-    SearchPlugin(),
-    GlobalDataPlugin({
-      siteTitle: "VoRbE",
-      pageLinks: [
-        { text: "Articole", link: "/articole" },
-        { text: "Gânduri", link: "/ganduri" },
-        { text: "Blog", link: "/blog" },
-        { text: "Proiecte", link: "/proiecte" },
-        { text: "Despre", link: "/despre" },
-      ],
-    }),
-    // ⚠️ elimină ExplorerPlugin() dacă nu vrei bara laterală
-    // FileExplorerPlugin(), ← elimină dacă vrei o interfață curată
-    ContentGraphPlugin(), // optional: pentru legături între pagini
-  ],
+  plugins: {
+    transformers: [
+      Plugin.FrontMatter(),
+      Plugin.CreatedModifiedDate({
+        priority: ["frontmatter", "filesystem"],
+      }),
+      Plugin.Latex({ renderEngine: "katex" }),
+      Plugin.SyntaxHighlighting({
+        theme: {
+          light: "github-light",
+          dark: "github-dark",
+        },
+        keepBackground: false,
+      }),
+      Plugin.ObsidianFlavoredMarkdown({ enableInHtmlEmbed: false }),
+      Plugin.GitHubFlavoredMarkdown(),
+      Plugin.TableOfContents(),
+      Plugin.CrawlLinks({ markdownLinkResolution: "shortest" }),
+      Plugin.Description(),
+    ],
+    filters: [Plugin.RemoveDrafts()],
+    emitters: [
+      Plugin.AliasRedirects(),
+      Plugin.ComponentResources(),
+      Plugin.ContentPage(),
+      Plugin.FolderPage(),
+      Plugin.TagPage(),
+      Plugin.ContentIndex({
+        enableSiteMap: true,
+        enableRSS: true,
+      }),
+      Plugin.Assets(),
+      Plugin.Static(),
+      Plugin.NotFoundPage(),
+    ],
+  },
 }
 
 export default config
