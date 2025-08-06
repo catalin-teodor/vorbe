@@ -1,5 +1,11 @@
-import { FullSlug, joinSegments } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
+import { QuartzComponent } from "../../components/types"
+import { BuildCtx } from "../../util/ctx"
+import { googleFontHref, googleFontSubsetHref, joinStyles, processGoogleFonts } from "../../util/theme"
+import { FullSlug, joinSegments } from "../../util/path"
+import { transform as transpile } from "esbuild"
+import { Features, transform } from "lightningcss"
+import { write } from "./helpers"
 
 // @ts-ignore
 import spaRouterScript from "../../components/scripts/spa.inline"
@@ -7,17 +13,6 @@ import spaRouterScript from "../../components/scripts/spa.inline"
 import popoverScript from "../../components/scripts/popover.inline"
 import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
-import { BuildCtx } from "../../util/ctx"
-import { QuartzComponent } from "../../components/types"
-import {
-  googleFontHref,
-  googleFontSubsetHref,
-  joinStyles,
-  processGoogleFonts,
-} from "../../util/theme"
-import { Features, transform } from "lightningcss"
-import { transform as transpile } from "esbuild"
-import { write } from "./helpers"
 
 type ComponentResources = {
   css: string[]
@@ -25,43 +20,33 @@ type ComponentResources = {
   afterDOMLoaded: string[]
 }
 
-function normalize(resource: unknown): string[] {
-  if (!resource) return []
-  if (Array.isArray(resource)) return resource.filter((r) => typeof r === "string")
-  if (typeof resource === "string") return [resource]
-  return []
-}
-
 function getComponentResources(ctx: BuildCtx): ComponentResources {
   try {
-    const allComponents: Set<QuartzComponent> = new Set()
-    for (const emitter of ctx.cfg.plugins.emitters) {
-      const components = emitter.getQuartzComponents?.(ctx) ?? []
+    const allComponents = new Set<QuartzComponent>()
+    for (const emitter of ctx.cfg.plugins.emitters ?? []) {
+      const components = emitter?.getQuartzComponents?.(ctx) ?? []
       for (const component of components) {
-        allComponents.add(component)
+        if (component) allComponents.add(component)
       }
     }
 
-    const componentResources = {
-      css: new Set<string>(),
-      beforeDOMLoaded: new Set<string>(),
-      afterDOMLoaded: new Set<string>(),
-    }
+    const css = new Set<string>()
+    const beforeDOMLoaded = new Set<string>()
+    const afterDOMLoaded = new Set<string>()
 
     for (const component of allComponents) {
-      normalize(component.css).forEach((c) => componentResources.css.add(c))
-      normalize(component.beforeDOMLoaded).forEach((b) =>
-        componentResources.beforeDOMLoaded.add(b),
-      )
-      normalize(component.afterDOMLoaded).forEach((a) =>
-        componentResources.afterDOMLoaded.add(a),
-      )
+      const norm = (val: string | string[] | undefined): string[] =>
+        val == null ? [] : Array.isArray(val) ? val : [val]
+
+      norm(component.css).forEach((c) => css.add(c))
+      norm(component.beforeDOMLoaded).forEach((s) => beforeDOMLoaded.add(s))
+      norm(component.afterDOMLoaded).forEach((s) => afterDOMLoaded.add(s))
     }
 
     return {
-      css: [...componentResources.css],
-      beforeDOMLoaded: [...componentResources.beforeDOMLoaded],
-      afterDOMLoaded: [...componentResources.afterDOMLoaded],
+      css: [...css],
+      beforeDOMLoaded: [...beforeDOMLoaded],
+      afterDOMLoaded: [...afterDOMLoaded],
     }
   } catch (e) {
     console.warn("⚠️ getComponentResources error:", e)
@@ -81,7 +66,6 @@ async function joinScripts(scripts: string[]): Promise<string> {
 
 function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentResources) {
   const cfg = ctx.cfg.configuration
-
   if (cfg.enablePopovers) {
     componentResources.afterDOMLoaded.push(popoverScript)
     componentResources.css.push(popoverStyle)
@@ -121,10 +105,7 @@ export const ComponentResources: QuartzEmitterPlugin = () => {
           throw new Error("baseUrl must be defined when using Google Fonts without cdnCaching")
         }
 
-        const { processedStylesheet, fontFiles } = await processGoogleFonts(
-          googleFontsStyleSheet,
-          cfg.baseUrl,
-        )
+        const { processedStylesheet, fontFiles } = await processGoogleFonts(googleFontsStyleSheet, cfg.baseUrl)
         googleFontsStyleSheet = processedStylesheet
 
         for (const fontFile of fontFiles) {
