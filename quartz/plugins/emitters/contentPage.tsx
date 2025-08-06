@@ -8,7 +8,6 @@ import { FullPageLayout } from "../../cfg"
 import { pathToRoot } from "../../util/path"
 import { defaultContentPageLayout, sharedPageComponents } from "../../../quartz.layout"
 import { Content } from "../../components"
-import { styleText } from "util"
 import { write } from "./helpers"
 import { BuildCtx } from "../../util/ctx"
 import { Node } from "unist"
@@ -86,11 +85,8 @@ export const ContentPage: QuartzEmitterPlugin<Partial<FullPageLayout>> = (userOp
       }
 
       if (!containsIndex) {
-        console.log(
-          styleText(
-            "yellow",
-            `\nWarning: missing \`index.md\` at the root of \`${ctx.argv.directory}\`. This may cause errors when deploying.`,
-          ),
+        console.warn(
+          `\nWarning: missing \`index.md\` at the root of \`${ctx.argv.directory}\`. This may cause errors when deploying.`,
         )
       }
     },
